@@ -126,7 +126,7 @@ def main():
     # This method merges the LoRa layers into the base model. 
     # This is needed if someone wants to use the base model as a standalone model.
     # if we quantize the model we actually can't use the merge
-    # model = model.merge_and_unload()
+    model = model.merge_and_unload()
     
     # effiency
     # model = model.to_bettertransformer()
