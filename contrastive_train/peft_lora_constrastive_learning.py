@@ -59,7 +59,7 @@ def parse_args():
     parser.add_argument(
         "--per_device_train_batch_size",
         type=int,
-        default=8,
+        default=24,
         help="Batch size (per device) for the training dataloader.",
     )
     parser.add_argument(
@@ -73,12 +73,6 @@ def parse_args():
         type=float,
         default=5e-5,
         help="Initial learning rate (after the potential warmup period) to use.",
-    )
-    parser.add_argument(
-        "--logit_scale",
-        type=int,
-        default=100,
-        help="Batch size (per device) for the evaluation dataloader.",
     )
     parser.add_argument("--weight_decay", type=float, default=0.0, help="Weight decay to use.")
     parser.add_argument("--num_train_epochs", type=int, default=3, help="Total number of training epochs to perform.")
@@ -201,7 +195,7 @@ def main():
         for k, v in result_passage.items():
             result[f"category_{k}"] = v
             
-        result["labels"] = examples["y_type"]
+        result["labels"] = examples["label"]
 
         return result
 
@@ -289,7 +283,7 @@ def main():
         experiment_config = vars(args)
         # TensorBoard cannot log Enums, need the raw value
         experiment_config["lr_scheduler_type"] = experiment_config["lr_scheduler_type"].value
-        accelerator.init_trackers("peft_contrastive_learning", experiment_config)
+        accelerator.init_trackers("peft_sementic_search_training", experiment_config)
 
     metric = evaluate.load("roc_auc")
 
@@ -341,44 +335,44 @@ def main():
     progress_bar.update(completed_steps)
 
     for epoch in range(starting_epoch, args.num_train_epochs):
-        # model.train()
-        # if args.with_tracking:
-        #     total_loss = 0
-        # if args.resume_from_checkpoint and epoch == starting_epoch and resume_step is not None:
-        #     # We skip the first `n` batches in the dataloader when resuming from a checkpoint
-        #     active_dataloader = accelerator.skip_first_batches(train_dataloader, resume_step)
-        # else:
-        #     active_dataloader = train_dataloader
-        # for step, batch in enumerate(active_dataloader):
-        #     with accelerator.accumulate(model):
-        #         title_embs = model(**{k.replace("title_", ""): v for k, v in batch.items() if "title" in k})
-        #         category_embs = model(**{k.replace("category_", ""): v for k, v in batch.items() if "category" in k})
-        #         loss = get_loss(get_cosing_embeddings(title_embs, category_embs), batch["labels"])
-        #         total_loss += accelerator.reduce(loss.detach().float(), reduction="sum")
-        #         accelerator.backward(loss)
-        #         optimizer.step()
-        #         lr_scheduler.step()
-        #         model.zero_grad()
+        model.train()
+        if args.with_tracking:
+            total_loss = 0
+        if args.resume_from_checkpoint and epoch == starting_epoch and resume_step is not None:
+            # We skip the first `n` batches in the dataloader when resuming from a checkpoint
+            active_dataloader = accelerator.skip_first_batches(train_dataloader, resume_step)
+        else:
+            active_dataloader = train_dataloader
+        for step, batch in enumerate(active_dataloader):
+            with accelerator.accumulate(model):
+                title_embs = model(**{k.replace("title_", ""): v for k, v in batch.items() if "title" in k})
+                category_embs = model(**{k.replace("category_", ""): v for k, v in batch.items() if "category" in k})
+                loss = get_loss(get_cosing_embeddings(title_embs, category_embs), batch["labels"])
+                total_loss += accelerator.reduce(loss.detach().float(), reduction="sum")
+                accelerator.backward(loss)
+                optimizer.step()
+                lr_scheduler.step()
+                model.zero_grad()
 
-        #     # Checks if the accelerator has performed an optimization step behind the scenes
-        #     if accelerator.sync_gradients:
-        #         progress_bar.update(1)
-        #         completed_steps += 1
+            # Checks if the accelerator has performed an optimization step behind the scenes
+            if accelerator.sync_gradients:
+                progress_bar.update(1)
+                completed_steps += 1
 
-        #     if (step + 1) % 100 == 0:
-        #         logger.info(f"Step: {step+1}, Loss: {total_loss/(step+1)}")
-        #         if args.with_tracking:
-        #             accelerator.log({"train/loss": total_loss / (step + 1)}, step=completed_steps)
+            if (step + 1) % 100 == 0:
+                logger.info(f"Step: {step+1}, Loss: {total_loss/(step+1)}")
+                if args.with_tracking:
+                    accelerator.log({"train/loss": total_loss / (step + 1)}, step=completed_steps)
 
-        #     if isinstance(checkpointing_steps, int):
-        #         if completed_steps % checkpointing_steps == 0:
-        #             output_dir = f"step_{completed_steps }"
-        #             if args.output_dir is not None:
-        #                 output_dir = os.path.join(args.output_dir, output_dir)
-        #             accelerator.save_state(output_dir)
+            if isinstance(checkpointing_steps, int):
+                if completed_steps % checkpointing_steps == 0:
+                    output_dir = f"step_{completed_steps }"
+                    if args.output_dir is not None:
+                        output_dir = os.path.join(args.output_dir, output_dir)
+                    accelerator.save_state(output_dir)
 
-        #     if completed_steps >= args.max_train_steps:
-        #         break
+            if completed_steps >= args.max_train_steps:
+                break
 
         model.eval()
         for step, batch in enumerate(eval_dataloader):
@@ -394,10 +388,10 @@ def main():
 
         result = metric.compute()
         result = {f"eval/{k}": v for k, v in result.items()}
+        
         # Use accelerator.print to print only on the main process.
         accelerator.print(f"epoch {epoch}:", result)
         if args.with_tracking:
-            total_loss = 0
             result["train/epoch_loss"] = total_loss.item() / len(train_dataloader)
             accelerator.log(result, step=completed_steps)
 
@@ -414,11 +408,12 @@ def main():
     accelerator.end_training()
 
 
+
 if __name__ == "__main__":
     main()
 
 
-# python contrastive_train/peft_lora_constrastive_learning.py  --dataset_path "./dataset" --model_name_or_path "BAAI/bge-small-en" --output_dir "./contrastive_checkpoints" --use_peft  --with_tracking --report_to tensorboard
+# python contrastive_train/peft_lora_constrastive_learning.py  --dataset_path "./dataset" --model_name_or_path "BAAI/bge-large-en" --output_dir "./sementic_search_outs" --use_peft  --with_tracking --report_to all
 
                                                                                                                                                                                                              
                                                          

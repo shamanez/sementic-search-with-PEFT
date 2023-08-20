@@ -34,4 +34,14 @@ def get_cosing_embeddings(query_embs, product_embs):
 
 
 def get_loss(cosine_score, labels):
+    """
+    Computes a custom contrastive loss based on cosine similarity and binary labels.
+
+    Args:
+        cosine_score (torch.Tensor): A tensor representing the cosine similarity scores between embeddings.
+        labels (torch.Tensor): A tensor of binary labels (0 or 1) indicating matching (1) or non-matching (0) cases.
+
+    Returns:
+        torch.Tensor: The computed contrastive loss value, promoting similarity for matching cases and dissimilarity for non-matching cases.
+    """
     return torch.mean(torch.square(labels * (1 - cosine_score) + torch.clamp((1 - labels) * cosine_score, min=0.0)))

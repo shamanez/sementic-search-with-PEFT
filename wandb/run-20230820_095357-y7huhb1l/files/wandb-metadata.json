@@ -1,0 +1,96 @@
+{
+    "os": "Linux-5.15.0-1033-aws-x86_64-with-glibc2.31",
+    "python": "3.10.10",
+    "heartbeatAt": "2023-08-20T09:53:57.907400",
+    "startedAt": "2023-08-20T09:53:57.551175",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--dataset_path",
+        "./dataset",
+        "--model_name_or_path",
+        "BAAI/bge-large-en",
+        "--output_dir",
+        "./sementic_search_outs",
+        "--use_peft",
+        "--with_tracking",
+        "--report_to",
+        "all"
+    ],
+    "state": "running",
+    "program": "/home/ubuntu/shamane/sementic-search/contrastive_train/peft_lora_constrastive_learning.py",
+    "codePath": "contrastive_train/peft_lora_constrastive_learning.py",
+    "git": {
+        "remote": "https://github.com/shamanez/sementic-search.git",
+        "commit": "77cc5763bcb40fe5206560b846c8ec547022ccf6"
+    },
+    "email": "gayal.sha92@gmail.com",
+    "root": "/home/ubuntu/shamane/sementic-search",
+    "host": "ip-172-31-22-60",
+    "username": "ubuntu",
+    "executable": "/opt/conda/envs/pytorch/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2962.2545,
+        "min": 1200.0,
+        "max": 3000.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3000.0,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 3000.0,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 3000.0,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 3000.0,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 3000.0,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 3000.0,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 2698.036,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 3000.0,
+            "min": 1200.0,
+            "max": 3000.0
+        }
+    ],
+    "disk": {
+        "total": 1985.2919158935547,
+        "used": 425.27893829345703
+    },
+    "gpu": "Tesla V100-SXM2-16GB",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "Tesla V100-SXM2-16GB",
+            "memory_total": 17179869184
+        }
+    ],
+    "memory": {
+        "total": 59.85057830810547
+    }
+}

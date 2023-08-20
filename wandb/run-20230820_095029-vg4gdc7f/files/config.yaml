@@ -1,0 +1,108 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    python_version: 3.10.10
+    cli_version: 0.15.8
+    framework: huggingface
+    huggingface_version: 4.32.0.dev0
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1692525029.865697
+    t:
+      1:
+      - 1
+      - 5
+      - 11
+      - 49
+      - 51
+      - 53
+      - 55
+      - 71
+      - 98
+      - 100
+      2:
+      - 1
+      - 5
+      - 11
+      - 49
+      - 51
+      - 53
+      - 55
+      - 71
+      - 98
+      - 100
+      3:
+      - 23
+      4: 3.10.10
+      5: 0.15.8
+      6: 4.32.0.dev0
+      8:
+      - 5
+dataset_path:
+  desc: null
+  value: ./dataset
+max_length:
+  desc: null
+  value: 128
+model_name_or_path:
+  desc: null
+  value: BAAI/bge-large-en
+per_device_train_batch_size:
+  desc: null
+  value: 24
+per_device_eval_batch_size:
+  desc: null
+  value: 8
+learning_rate:
+  desc: null
+  value: 5.0e-05
+weight_decay:
+  desc: null
+  value: 0.0
+num_train_epochs:
+  desc: null
+  value: 3
+max_train_steps:
+  desc: null
+  value: 6237
+gradient_accumulation_steps:
+  desc: null
+  value: 1
+lr_scheduler_type:
+  desc: null
+  value: linear
+num_warmup_steps:
+  desc: null
+  value: 0
+output_dir:
+  desc: null
+  value: ./sementic_search_outs
+seed:
+  desc: null
+  value: null
+hub_model_id:
+  desc: null
+  value: null
+hub_token:
+  desc: null
+  value: null
+checkpointing_steps:
+  desc: null
+  value: null
+resume_from_checkpoint:
+  desc: null
+  value: null
+with_tracking:
+  desc: null
+  value: true
+report_to:
+  desc: null
+  value: all
+sanity_test:
+  desc: null
+  value: false
+use_peft:
+  desc: null
+  value: true
