@@ -135,11 +135,11 @@ def main():
         with torch.no_grad():
             #with torch.amp.autocast(dtype=torch.bfloat16, device_type="cuda"):
             with torch.amp.autocast(dtype=torch.float16, device_type="cuda"):
-                passage_embs = model(**{k: v.to(args.device) for k, v in batch.items()}).detach().float().cpu()
+                category_embs = model(**{k: v.to(args.device) for k, v in batch.items()}).detach().float().cpu()
         start_index = step * args.test_batch_size
         end_index = start_index + args.test_batch_size if (start_index + args.test_batch_size) < num_cats else num_cats
-        cat_embeddings_array[start_index:end_index] = passage_embs
-        del passage_embs, batch
+        cat_embeddings_array[start_index:end_index] = category_embs
+        del category_embs, batch
     
     cat_search_index = construct_search_index(args.embed_dim, num_cats, cat_embeddings_array)
     

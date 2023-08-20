@@ -3,13 +3,13 @@ import hnswlib
 import torch
 
 def preprocess_category_function(examples, tokenizer, max_len):
-    passages = examples["cat"]
-    result = tokenizer(passages, padding="max_length", max_length=max_len, truncation=True)
+    categories = examples["cat"]
+    result = tokenizer(categories, padding="max_length", max_length=max_len, truncation=True)
     return result
 
 def preprocess_title_function(examples, tokenizer, max_len):
-    passages = examples["x_title"]
-    result = tokenizer(passages, padding="max_length", max_length=max_len, truncation=True)
+    titles = examples["x_title"]
+    result = tokenizer(titles, padding="max_length", max_length=max_len, truncation=True)
     return result
 
 
@@ -42,7 +42,7 @@ def get_query_embeddings(query, model, tokenizer, max_len,  device):
     return query_embs[0]
 
 
-def get_nearest_neighbours(k, search_index, query_embeddings, ids_to_passage_dict, threshold=0.7):
+def get_nearest_neighbours(k, search_index, query_embeddings, ids_to_cat_dict, threshold=0.7):
     # Controlling the recall by setting ef:
     search_index.set_ef(100)  # ef should always be > k
 
@@ -50,7 +50,7 @@ def get_nearest_neighbours(k, search_index, query_embeddings, ids_to_passage_dic
     labels, distances = search_index.knn_query(query_embeddings, k=k)
     
     return [
-        (ids_to_passage_dict[label], (1 - distance))
+        (ids_to_cat_dict[label], (1 - distance))
         for label, distance in zip(labels[0], distances[0])
         if (1 - distance) >= threshold
     ]
