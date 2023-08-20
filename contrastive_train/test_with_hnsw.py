@@ -206,10 +206,3 @@ if __name__ == "__main__":
     
 
 # python contrastive_train/test_with_hnsw.py --dataset_path "./dataset" --model_name_or_path "BAAI/bge-large-en" --peft_model_path "./sementic_search_outs"
-
-
-# with 8 bit quantization: 
-
-# Recall: 0.74673670805476
-# Precision: 0.1546800382043926
-# Hit Rate: 0.8500477554918816
