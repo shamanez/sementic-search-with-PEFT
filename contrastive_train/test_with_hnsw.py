@@ -120,12 +120,17 @@ def main():
 
     # peft config and wrapping
     model = PeftModel.from_pretrained(model, args.peft_model_path)
-    
+            
     model.to(args.device)
     model.eval()
     # This method merges the LoRa layers into the base model. 
     # This is needed if someone wants to use the base model as a standalone model.
-    model = model.merge_and_unload()
+    # if we quantize the model we actually can't use the merge
+    # model = model.merge_and_unload()
+    
+    # effiency
+    # model = model.to_bettertransformer()
+
     
     
     num_cats = len(cat_dataset)
@@ -201,3 +206,10 @@ if __name__ == "__main__":
     
 
 # python contrastive_train/test_with_hnsw.py --dataset_path "./dataset" --model_name_or_path "BAAI/bge-large-en" --peft_model_path "./sementic_search_outs"
+
+
+# with 8 bit quantization: 
+
+# Recall: 0.74673670805476
+# Precision: 0.1546800382043926
+# Hit Rate: 0.8500477554918816
